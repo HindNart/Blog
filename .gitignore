@@ -1,3 +1,5 @@
+node_modules/
+.env/
 .sass-cache/
 *.css.map
 *.sass.map
