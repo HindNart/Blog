@@ -6,21 +6,25 @@ const path = require('path');
 // Import routes
 const routes = require('./routes');
 
+// Import middlewares
+const authMiddleware = require('./middlewares/auth.middleware');
+
 const app = express();
 
 
 // Parse request body
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // HTTP request logger
-app.use(morgan('combined'))
+app.use(morgan('combined'));
 
 // Method override
-// app.use(methodOverride('_method'))
+// app.use(methodOverride('_method'));
 
 // Custom middleware
-// app.use(SortMiddleware)
+app.use(authMiddleware);
+// app.use(SortMiddleware);
 
 // Template engine
 app.engine('.hbs', handlebars.engine({ extname: '.hbs' }));
