@@ -23,20 +23,32 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --inspect backend/src/index.js",
+    "start": "node index.js",
+    "dev": "nodemon --inspect index.js",
+    "seed": "node backend/src/utils/seed.util.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cloudinary": "^1.41.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "crypto": "^1.0.1",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "express-handlebars": "^8.0.6",
+    "express-rate-limit": "^8.3.1",
+    "helmet": "^8.1.0",
     "ioredis": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
     "method-override": "^3.0.0",
     "mongoose": "^9.2.3",
     "mongoose-delete": "^1.0.7",
-    "mongoose-slug-updater": "^3.3.0"
+    "mongoose-slug-updater": "^3.3.0",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemailer": "^8.0.1",
+    "sanitize-html": "^2.17.1"
   },
   "devDependencies": {
     "morgan": "^1.10.1",
