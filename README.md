@@ -27,8 +27,7 @@
 8. [Folder Structure](#-folder-structure)
 9. [API Reference](#-api-reference)
 10. [Contribution Guidelines](#-contribution-guidelines)
-11. [Roadmap](#-roadmap)
-12. [License](#-license)
+11. [License](#-license)
 
 ---
 
