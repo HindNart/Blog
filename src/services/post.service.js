@@ -1,9 +1,5 @@
 const Post = require('../models/post.model');
-const Category = require('../models/category.model');
-const Subscriber = require('../models/subscriber.model');
-const Notification = require('../models/notification.model');
 const redisService = require('./redis.service');
-const mailService = require('./mail.service');
 const uploadService = require('./upload.service');
 const { getPagination } = require('../utils/pagination.util');
 const { AppError } = require('../utils/response.util');
@@ -23,10 +19,10 @@ const SANITIZE_OPTIONS = {
 
 const postService = {
     async getPublicPosts({ page = 1, limit = 9, category, keyword, tag }) {
-        const query = { status: 'approved', isDeleted: false };
+        const query = { status: 'approved' };
         if (category) query.category = category;
-        if (keyword) query.$text = { $search: keyword };
         if (tag) query.tags = tag.toLowerCase();
+        if (keyword) query.$text = { $search: keyword };
 
         const { currentPage, totalPages, skip, hasNext, hasPrev, nextPage, prevPage, pages, totalItems }
             = getPagination(page, await Post.countDocuments(query), limit);
@@ -43,7 +39,7 @@ const postService = {
 
     async getPostBySlug(slug) {
         const post = await Post.findOneAndUpdate(
-            { slug, status: 'approved', isDeleted: false },
+            { slug },
             { $inc: { views: 1 } },
             { new: true }
         ).populate('author', 'username avatar').populate('category', 'name slug').lean();
@@ -52,7 +48,7 @@ const postService = {
     },
 
     async getUserPosts(userId, { page = 1, limit = 10, status }) {
-        const query = { author: userId, isDeleted: false };
+        const query = { author: userId };
         if (status) query.status = status;
 
         const { currentPage, totalPages, skip, hasNext, hasPrev, nextPage, prevPage, pages, totalItems }
@@ -91,7 +87,7 @@ const postService = {
     },
 
     async updatePost(postId, userId, { title, content, category, tags }, files) {
-        const post = await Post.findOne({ _id: postId, author: userId, isDeleted: false });
+        const post = await Post.findOne({ _id: postId, author: userId });
         if (!post) throw new AppError('Không tìm thấy bài đăng', 404);
         if (!['draft', 'rejected'].includes(post.status)) {
             throw new AppError('Chỉ có thể chỉnh sửa bài đăng ở trạng thái nháp hoặc bị từ chối', 400);
@@ -116,7 +112,7 @@ const postService = {
     },
 
     async submitPost(postId, userId) {
-        const post = await Post.findOne({ _id: postId, author: userId, isDeleted: false });
+        const post = await Post.findOne({ _id: postId, author: userId });
         if (!post) throw new AppError('Không tìm thấy bài đăng', 404);
         if (!['draft', 'rejected'].includes(post.status)) {
             throw new AppError('Bài đăng không thể gửi duyệt ở trạng thái hiện tại', 400);
@@ -128,7 +124,7 @@ const postService = {
     },
 
     async softDelete(postId, userId) {
-        const post = await Post.findOne({ _id: postId, author: userId, isDeleted: false });
+        const post = await Post.findOne({ _id: postId, author: userId });
         if (!post) throw new AppError('Không tìm thấy bài đăng', 404);
         await post.delete();
         await redisService.invalidatePostCache();

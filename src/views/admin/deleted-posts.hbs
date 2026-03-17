@@ -1,0 +1,47 @@
+{{#if restored}}<div class="alert alert-success">✅ Đã khôi phục bài đăng.</div>{{/if}}
+{{#if permDeleted}}<div class="alert alert-success">🗑️ Đã xóa vĩnh viễn bài đăng.</div>{{/if}}
+
+{{#if posts.length}}
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Tác giả</th>
+                <th>Trạng thái trước</th>
+                <th>Ngày xóa</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each posts}}
+            <tr>
+                <td>{{title}}</td>
+                <td>{{author.username}}<br><small>{{author.email}}</small></td>
+                <td><span class="badge badge-{{statusClass status}}">{{statusLabel status}}</span></td>
+                <td>{{formatDate deletedAt}}</td>
+                <td>
+                    <div class="action-group">
+                        <form action="/admin/posts/{{_id}}/restore?_method=PUT" method="POST" style="display:inline">
+                            <button type="submit" class="btn-sm btn-success">♻️ Khôi phục</button>
+                        </form>
+                        <form action="/admin/posts/{{_id}}/permanent-delete?_method=DELETE" method="POST"
+                            style="display:inline">
+                            <button type="submit" class="btn-sm btn-danger"
+                                onclick="return confirm('Xóa VĨNH VIỄN? Không thể hoàn tác!')">🗑️ Xóa vĩnh
+                                viễn</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+{{> pagination}}
+{{else}}
+<div class="empty-state">
+    <div class="empty-icon">🗑️</div>
+    <h2>Không có bài đăng nào bị xóa.</h2>
+</div>
+{{/if}}

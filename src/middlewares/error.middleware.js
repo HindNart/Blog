@@ -2,6 +2,12 @@ const errorMiddleware = (err, req, res, next) => {
     let statusCode = err.statusCode || 500;
     let message = err.message || 'Đã xảy ra lỗi, vui lòng thử lại sau.';
 
+    res.status(statusCode).render("error", {
+        title: statusCode === 404 ? "Không tìm thấy" : "Có lỗi xảy ra",
+        message: err.message,
+        statusCode: statusCode
+    });
+
     // Mongoose validation error
     if (err.name === 'ValidationError') {
         statusCode = 400;
@@ -10,7 +16,7 @@ const errorMiddleware = (err, req, res, next) => {
     // Mongoose duplicate key
     if (err.code === 11000) {
         statusCode = 400;
-        const field = Object.keys(err.ketValue)[0];
+        const field = Object.keys(err.keyValue)[0];
         message = `${field === 'email' ? 'Email' : 'Username'} đã tồn tại.`;
     }
     // Multer errors

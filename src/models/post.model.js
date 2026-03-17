@@ -100,7 +100,7 @@ const postSchema = new Schema(
 
 // Index để tìm kiếm nhanh
 postSchema.index({ title: 'text', content: 'text', tags: 'text' });
-postSchema.index({ status: 1, isDeleted: 1 });
+postSchema.index({ status: 1, deleted: 1 });
 postSchema.index({ author: 1 });
 postSchema.index({ category: 1 });
 postSchema.index({ views: 1 });

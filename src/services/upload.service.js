@@ -31,7 +31,7 @@ const postUpload = multer({
 
 // Avatar uploader
 const avatarUpload = multer({
-    storage: createStorage('avatars', [{ width: 200, height: 200, crop: 'limit', gravity: 'face' }]),
+    storage: createStorage('avatars', [{ width: 300, height: 300, crop: 'fill', gravity: 'face' }]),
     limits: { fileSize: 2 * 1024 * 1024 },
     fileFilter,
 });

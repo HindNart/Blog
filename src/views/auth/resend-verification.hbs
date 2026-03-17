@@ -1,0 +1,23 @@
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">📧</div>
+        <h1 class="auth-title">Gửi lại xác minh email</h1>
+        {{> flash-message}}
+        <p class="auth-desc">Nhập địa chỉ email của bạn và chúng tôi sẽ gửi lại link xác minh.</p>
+        <form action="/auth/resend-verification" method="POST" class="auth-form">
+            <div class="form-group">
+                <label class="form-label" for="resend-email">Email</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    <input type="email" id="resend-email" name="email" required class="form-input input-with-icon"
+                        placeholder="email@example.com">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">📤 Gửi lại email xác minh</button>
+        </form>
+        <p class="auth-switch"><a href="/auth/login">Quay lại đăng nhập</a></p>
+    </div>
+</div>

@@ -3,7 +3,7 @@ const { catchAsync } = require('../utils/response.util');
 
 module.exports = {
     dashboard: catchAsync(async (req, res) => {
-        const stats = await adminService.getDashboardStats();
+        const stats = await adminService.getDashboardStatus();
         res.render('admin/dashboard', { title: 'Dashboard Admin', stats, layout: 'admin' });
     }),
 

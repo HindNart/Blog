@@ -1,0 +1,63 @@
+{{#if approved}}<div class="alert alert-success">✅ Đã phê duyệt bài đăng.</div>{{/if}}
+{{#if rejected}}<div class="alert alert-success">✅ Đã từ chối và thông báo cho tác giả.</div>{{/if}}
+
+{{#if posts.length}}
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Tác giả</th>
+                <th>Danh mục</th>
+                <th>Ngày gửi</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each posts}}
+            <tr>
+                <td><strong>{{title}}</strong><br><small class="text-muted">{{truncate excerpt 80}}</small></td>
+                <td>{{author.username}}<br><small>{{author.email}}</small></td>
+                <td>{{#if category}}{{category.name}}{{else}}—{{/if}}</td>
+                <td>{{formatDate createdAt}}</td>
+                <td>
+                    <div class="action-group">
+                        <a href="/posts/{{slug}}" target="_blank" class="btn-sm btn-secondary">👁️ Xem</a>
+                        <form action="/admin/posts/{{_id}}/approve?_method=PUT" method="POST" style="display:inline">
+                            <button type="submit" class="btn-sm btn-success">✅ Duyệt</button>
+                        </form>
+                        <button type="button" class="btn-sm btn-danger"
+                            onclick="showRejectModal('{{_id}}', '{{title}}')">❌ Từ chối</button>
+                    </div>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+{{> pagination}}
+{{else}}
+<div class="empty-state">
+    <div class="empty-icon">🎉</div>
+    <h2>Không có bài đăng nào chờ duyệt!</h2>
+</div>
+{{/if}}
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="rejectModal" style="display:none">
+    <div class="modal">
+        <h3>❌ Từ chối bài đăng</h3>
+        <p id="rejectPostTitle"></p>
+        <form id="rejectForm" method="POST">
+            <div class="form-group">
+                <label class="form-label">Lý do từ chối <span class="required">*</span></label>
+                <textarea name="reason" required rows="4" class="form-input"
+                    placeholder="Nhập lý do từ chối để thông báo cho tác giả..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="closeRejectModal()" class="btn btn-secondary">Hủy</button>
+                <button type="submit" class="btn btn-danger">Xác nhận từ chối</button>
+            </div>
+        </form>
+    </div>
+</div>

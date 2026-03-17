@@ -1,0 +1,42 @@
+<div class="stats-grid">
+    <div class="stat-card stat-primary">
+        <div class="stat-icon">📋</div>
+        <div class="stat-num">{{stats.totalPosts}}</div>
+        <div class="stat-label">Tổng bài đăng</div>
+    </div>
+    <div class="stat-card stat-warning">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-num">{{stats.pendingPosts}}</div>
+        <div class="stat-label">Chờ duyệt</div>
+        {{#if stats.pendingPosts}}
+        <a href="/admin/posts/pending" class="stat-action">Duyệt ngay →</a>
+        {{/if}}
+    </div>
+    <div class="stat-card stat-success">
+        <div class="stat-icon">✅</div>
+        <div class="stat-num">{{stats.approvedPosts}}</div>
+        <div class="stat-label">Đã duyệt</div>
+    </div>
+    <div class="stat-card stat-danger">
+        <div class="stat-icon">🗑️</div>
+        <div class="stat-num">{{stats.deletedPosts}}</div>
+        <div class="stat-label">Đã xóa</div>
+        {{#if stats.deletedPosts}}
+        <a href="/admin/posts/deleted" class="stat-action">Xem →</a>
+        {{/if}}
+    </div>
+    <div class="stat-card stat-info">
+        <div class="stat-icon">👥</div>
+        <div class="stat-num">{{stats.totalUsers}}</div>
+        <div class="stat-label">Người dùng</div>
+    </div>
+</div>
+
+<div class="admin-section">
+    <h2>Quản lý danh mục</h2>
+    <form action="/admin/categories?_method=DELETE" method="POST" class="inline-form">
+        <input type="text" name="name" placeholder="Tên danh mục mới" required class="form-input inline-input">
+        <input type="text" name="description" placeholder="Mô tả (tùy chọn)" class="form-input inline-input">
+        <button type="submit" class="btn btn-primary">+ Thêm</button>
+    </form>
+</div>

@@ -13,11 +13,11 @@ const safeRedis = async (fn) => {
 
 const redisService = {
     async get(key) {
-        return safeRedis((r) => r.get(key));
+        return await safeRedis((r) => r.get(key));
     },
 
     async set(key, value, ttl) {
-        return safeRedis((r) => ttl ? r.setex(key, ttl, value) : r.set(key, value));
+        return safeRedis((r) => ttl ? r.setex(key, ttl, String(value)) : r.set(key, String(value)));
     },
 
     async del(key) {
@@ -32,13 +32,13 @@ const redisService = {
     },
 
     // Cache danh sách bài đăng (trang chủ, phân trang)
-    async setPostList(key, data, ttl = 300) {  // 5 phút
-        await this.setex(key, JSON.stringify(data), ttl);
-    },
-
     async getPostList(key) {
         const data = await this.get(key);
         return data ? JSON.parse(data) : null;
+    },
+
+    async setPostList(key, data, ttl = 300) {  // 5 phút
+        await this.set(key, JSON.stringify(data), ttl);
     },
 
     // Xóa cache khi có bài mới được duyệt
@@ -83,7 +83,7 @@ const redisService = {
     // Notification count cache
     async getUnreadCount(userId) {
         const val = await this.get(`notif:${userId}`);
-        return val ? parseInt(val) : null;
+        return val !== null ? parseInt(val, 10) : null;
     },
 
     async setUnreadCount(userId, count) {

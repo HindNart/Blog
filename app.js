@@ -23,7 +23,7 @@ app.use(compression());
 // Rate limiting
 const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: 1000, // limit each IP to 100 requests per windowMs
 });
 app.use(globalLimiter);
 const authLimiter = rateLimit({
@@ -33,21 +33,20 @@ const authLimiter = rateLimit({
 app.use('/auth/login', authLimiter);
 app.use('/auth/forgot-password', authLimiter);
 
+// Method override
+app.use(methodOverride('_method'));
+
 // Middleware
+// app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public'), {
+app.use(express.static(path.join(__dirname, 'src/public'), {
     maxAge: process.env.NODE_ENV === 'production' ? '30d' : 0,
 }));
 
-app.use(errorMiddleware);
-
 // HTTP request logger
 app.use(morgan('combined'));
-
-// Method override
-app.use(methodOverride('_method'));
 
 // Template engine
 app.engine('hbs', handlebars.engine({
@@ -61,6 +60,7 @@ app.engine('hbs', handlebars.engine({
         or: (a, b) => a || b,
         and: (a, b) => a && b,
         not: (a) => !a,
+        substr: (str, start, len) => (str || '').substring(start, start + len).toUpperCase(),
         includes: (arr, val) => Array.isArray(arr) && arr.includes(val),
         formatDate: (date) => {
             if (!date) return '';
@@ -91,5 +91,7 @@ app.set('views', path.join(__dirname, 'src/views'));
 
 // Routes
 routes(app);
+
+app.use(errorMiddleware);
 
 module.exports = app;

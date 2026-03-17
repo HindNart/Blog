@@ -1,0 +1,55 @@
+<div class="page-container">
+    <div class="post-form-wrap">
+        <h1 class="page-title">✏️ Chỉnh sửa bài đăng</h1>
+        {{> flash-message}}
+        {{#if post.rejectionReason}}
+        <div class="alert alert-warning">❌ Lý do từ chối: <strong>{{post.rejectionReason}}</strong></div>
+        {{/if}}
+        <form action="/posts/{{post._id}}/edit?_method=PUT" method="POST" enctype="multipart/form-data"
+            class="post-form">
+            <div class="form-group">
+                <label class="form-label">Tiêu đề <span class="required">*</span></label>
+                <input type="text" name="title" value="{{post.title}}" required maxlength="200" class="form-input">
+            </div>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Danh mục</label>
+                    <select name="category" class="form-select" required>
+                        <option value="">-- Chọn danh mục --</option>
+                        {{#each categories}}
+                        <option value="{{_id}}" {{#if (eq ../post.category._id _id)}}selected{{/if}}>{{name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags</label>
+                    <input type="text" name="tags" value="{{tagsString}}" class="form-input"
+                        placeholder="tag1, tag2, tag3">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Thay ảnh bìa</label>
+                {{#if post.thumbnail}}
+                <img src="{{post.thumbnail}}" alt="thumbnail hiện tại" class="current-thumbnail">
+                {{/if}}
+                <input type="file" name="thumbnail" accept="image/*" class="form-file">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nội dung <span class="required">*</span></label>
+                <div id="editor" class="editor-container"></div>
+                <textarea name="content" id="contentInput" style="display:none">{{post.content}}</textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Thêm ảnh vào nội dung</label>
+                <input type="file" name="contentImages" accept="image/*" multiple class="form-file">
+            </div>
+            <div class="form-actions">
+                <a href="/posts/my-posts" class="btn btn-muted">← Hủy</a>
+                <button type="submit" name="action" value="draft" class="btn btn-secondary">💾 Lưu nháp</button>
+                <button type="submit" name="action" value="submit" class="btn btn-primary">📤 Gửi duyệt</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>window.INITIAL_CONTENT = {{ json post.content }};</script>
+<script src="/js/editor.js"></script>

@@ -1,0 +1,22 @@
+{{#if pagination.totalPages}}
+{{#if (gt pagination.totalPages 1)}}
+<nav class="pagination">
+    {{#if pagination.hasPrev}}
+    <a href="?page={{pagination.prevPage}}{{#if keyword}}&keyword={{keyword}}{{/if}}{{#if selectedCategory}}&category={{selectedCategory.slug}}{{/if}}"
+        class="page-btn">←</a>
+    {{/if}}
+    {{#each pagination.pages}}
+    {{#if this.ellipsis}}
+    <span class="page-ellipsis">...</span>
+    {{else}}
+    <a href="?page={{this.num}}{{#if ../keyword}}&keyword={{../keyword}}{{/if}}{{#if ../selectedCategory}}&category={{../selectedCategory.slug}}{{/if}}"
+        class="page-btn {{#if this.active}}active{{/if}}">{{this.num}}</a>
+    {{/if}}
+    {{/each}}
+    {{#if pagination.hasNext}}
+    <a href="?page={{pagination.nextPage}}{{#if keyword}}&keyword={{keyword}}{{/if}}{{#if selectedCategory}}&category={{selectedCategory.slug}}{{/if}}"
+        class="page-btn">→</a>
+    {{/if}}
+</nav>
+{{/if}}
+{{/if}}

@@ -3,7 +3,7 @@ const User = require('../models/user.model');
 const Notification = require('../models/notification.model');
 const Subscriber = require('../models/subscriber.model');
 const redisService = require('./redis.service');
-const emailService = require('./mail.service');
+const mailService = require('./mail.service');
 const uploadService = require('./upload.service');
 const { getPagination } = require('../utils/pagination.util');
 const { AppError } = require('../utils/response.util');
@@ -12,17 +12,17 @@ const adminService = {
     async getDashboardStatus() {
         const [totalPosts, pendingPosts, totalUsers, deletedPosts, approvedPosts]
             = await Promise.all([
-                Post.countDocuments({ isDeleted: false }),
-                Post.countDocuments({ status: 'pending', isDeleted: false }),
-                Post.countDocuments({ role: 'user' }),
-                Post.countDocuments({ isDeleted: true }),
-                Post.countDocuments({ status: 'approved', isDeleted: false }),
+                Post.countDocuments({}),
+                Post.countDocuments({ status: 'pending' }),
+                User.countDocuments({ role: 'user' }),
+                Post.countDocumentsDeleted({}),
+                Post.countDocuments({ status: 'approved' }),
             ]);
         return { totalPosts, pendingPosts, totalUsers, deletedPosts, approvedPosts }
     },
 
     async getPendingPosts({ page = 1, limit = 10 }) {
-        const query = { status: 'pending', isDeleted: false };
+        const query = { status: 'pending' };
         const total = await Post.countDocuments(query);
         const pag = getPagination(page, total, limit);
         const posts = await Post.find(query)
@@ -35,7 +35,7 @@ const adminService = {
     },
 
     async getAllApprovedPosts({ page = 1, limit = 10, keyword }) {
-        const query = { status: 'approved', isDeleted: false };
+        const query = { status: 'approved' };
         if (keyword) query.$text = { $search: keyword };
         const total = await Post.countDocuments(query);
         const pag = getPagination(page, total, limit);
@@ -49,10 +49,9 @@ const adminService = {
     },
 
     async getDeletedPosts({ page = 1, limit = 10 }) {
-        const query = { isDeleted: true };
-        const total = await Post.countDocuments(query);
+        const total = await Post.countDocumentsDeleted();
         const pag = getPagination(page, total, limit);
-        const posts = await Post.find(query)
+        const posts = await Post.findDeleted()
             .populate('author', 'username email')
             .populate('category', 'name')
             .select('-content')
@@ -62,7 +61,7 @@ const adminService = {
     },
 
     async approvePost(postId, adminId) {
-        const post = await Post.findOne({ _id: postId, status: 'pending', isDeleted: false })
+        const post = await Post.findOne({ _id: postId, status: 'pending' })
             .populate('author', 'email username');
         if (!post) throw new AppError('Không tìm thấy bài đăng chờ duyệt', 404);
 
@@ -85,7 +84,7 @@ const adminService = {
         await redisService.invalidateUnreadCount(post.author._id);
 
         // Send email (non-blocking)
-        mailService.sendApprovalResult(post.author.email, post.title, post.slug, true).catch(() => { });
+        mailService.sendPostApprovalResult(post.author.email, post.title, post.slug, true).catch(() => { });
 
         // Send newsletter (non-blocking)
         Subscriber.find({ isActive: true }).lean().then((subs) => {
@@ -98,7 +97,7 @@ const adminService = {
     async rejectPost(postId, adminId, reason) {
         if (!reason?.trim()) throw new AppError('Vui lòng cung cấp lý do từ chối', 400);
 
-        const post = await Post.findOne({ _id: postId, status: 'pending', isDeleted: false })
+        const post = await Post.findOne({ _id: postId, status: 'pending' })
             .populate('author', 'email username');
         if (!post) throw new AppError('Không tìm thấy bài đăng chờ duyệt', 404);
 
@@ -114,16 +113,17 @@ const adminService = {
         });
         await redisService.invalidateUnreadCount(post.author._id);
 
-        mailService.sendApprovalResult(post.author.email, post.title, post.slug, false, reason).catch(() => { });
+        mailService.sendPostApprovalResult(post.author.email, post.title, post.slug, false, reason).catch(() => { });
         return post;
     },
 
     async restorePost(postId) {
-        const post = await Post.findOne({ _id: postId, isDeleted: true })
+        const post = await Post.findOneDeleted({ _id: postId })
             .populate('author', 'email username');
         if (!post) throw new AppError('Không tìm thấy bài đăng đã xóa', 404);
 
         await post.restore();
+        await redisService.invalidatePostCache();
 
         await Notification.create({
             recipient: post.author._id,
@@ -136,7 +136,7 @@ const adminService = {
     },
 
     async permanentDelete(postId) {
-        const post = await Post.findOne({ _id: postId, isDeleted: true });
+        const post = await Post.findOneDeleted({ _id: postId });
         if (!post) throw new AppError('Không tìm thấy bài đăng đã xóa', 404);
 
         // Delete images from Cloudinary

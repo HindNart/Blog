@@ -7,6 +7,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('../models/user.model');
 const Category = require('../models/category.model');
+const bcrypt = require('bcrypt');
 
 const CATEGORIES = [
     { name: 'Công nghệ', description: 'Tin tức công nghệ, lập trình, AI' },
@@ -24,14 +25,17 @@ async function seed() {
     // Tạo admin user nếu chưa tồn tại
     const adminExists = await User.findOne({ role: 'admin' });
     if (!adminExists) {
+        const hashedPassword = await bcrypt.hash('Admin@123456', 10);
         await User.create({
             username: 'admin',
             email: 'admin@blog.com',
-            password: 'Admin@123456',
-            role: 'admin'
+            password: hashedPassword,
+            role: 'admin',
+            isEmailVerified: true,
         });
         console.log('Admin user created');
     } else {
+        await User.updateOne({ role: 'admin' }, { isEmailVerified: true });
         console.log('Admin user already exists');
     }
 
@@ -48,3 +52,5 @@ async function seed() {
     console.log('Seed completed');
     process.exit(0);
 };
+
+seed();

@@ -20,28 +20,24 @@ module.exports = {
         res.render('posts/index', {
             title: keyword ? `Kết quả: "${keyword}"` : 'Trang chủ',
             posts, pagination, categories, keyword, tag,
-            selectedCategory, currentUser: req.user || null,
+            selectedCategory,
         });
     }),
 
-    // GET /posts/:slug - Chi tiết bài đăng
     show: catchAsync(async (req, res) => {
         const post = await postService.getPostBySlug(req.params.slug);
         const categories = await Category.find().lean();
         res.render('posts/detail', {
             title: post.title, post, categories,
-            currentUser: req.user || null,
             isOwner: req.user && req.user.userId === post.author._id.toString(),
         });
     }),
 
-    // GET /posts/create - Form tạo bài
     showCreate: catchAsync(async (req, res) => {
         const categories = await Category.find().lean();
         res.render('posts/create', { title: 'Viết bài mới', categories });
     }),
 
-    // POST /posts/create - Tạo bài
     create: catchAsync(async (req, res) => {
         const post = await postService.createPost(req.body, req.user.userId, req.files);
         if (req.body.action === 'submit') {
@@ -51,10 +47,9 @@ module.exports = {
         res.redirect(`/posts/${post._id}/edit?created=1`);
     }),
 
-    // GET /posts/:id/edit - Form chỉnh sửa
     showEdit: catchAsync(async (req, res) => {
-        const Post = require('../models/Post');
-        const post = await Post.findOne({ _id: req.params.id, author: req.user.userId, isDeleted: false })
+        const Post = require('../models/post.model');
+        const post = await Post.findOne({ _id: req.params.id, author: req.user.userId, })
             .populate('category').lean();
         if (!post) return res.status(404).render('error', { title: 'Không tìm thấy', message: 'Bài đăng không tồn tại', statusCode: 404 });
         if (!['draft', 'rejected'].includes(post.status)) {
@@ -67,7 +62,6 @@ module.exports = {
         });
     }),
 
-    // PUT /posts/:id - Cập nhật bài
     update: catchAsync(async (req, res) => {
         const post = await postService.updatePost(req.params.id, req.user.userId, req.body, req.files);
         if (req.body.action === 'submit') {
@@ -77,13 +71,11 @@ module.exports = {
         res.redirect(`/posts/${post._id}/edit?updated=1`);
     }),
 
-    // DELETE /posts/:id - Xóa mềm
     delete: catchAsync(async (req, res) => {
         await postService.softDelete(req.params.id, req.user.userId);
         res.redirect('/posts/my-posts?deleted=1');
     }),
 
-    // GET /posts/my-posts - Bài của tôi
     myPosts: catchAsync(async (req, res) => {
         const { page, status } = req.query;
         const { posts, pagination } = await postService.getUserPosts(req.user.userId, { page, status });
@@ -105,7 +97,6 @@ module.exports = {
         });
     }),
 
-    // POST /posts/notifications/read-all
     markNotificationsRead: catchAsync(async (req, res) => {
         await Notification.updateMany({ recipient: req.user.userId, isRead: false }, { isRead: true });
         await redisService.setUnreadCount(req.user.userId, 0);

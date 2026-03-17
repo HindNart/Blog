@@ -1,18 +1,28 @@
 const redisService = require('../services/redis.service');
 
 const cacheMiddleware = (ttl = 300) => async (req, res, next) => {
-    // Chỉ cache GET request, không cache request của logged-in user
-    if (req.method !== 'GET' || req.user) return next();
+    // Chỉ cache GET request
+    if (req.method !== 'GET') return next();
 
     const cacheKey = `posts:list:${req.originalUrl}`;
-    const cached = await redisService.getPostList(cacheKey);
 
-    if (cached) return res.render('posts/index', cached);
+    try {
+        const cached = await redisService.getPostList(cacheKey);
 
-    // Override res.render để intercept và cache
+        if (cached) return res.render('posts/index', cached);
+    } catch {
+        return next();
+    }
+
+    // Chưa có cache → override res.render để lưu data (KHÔNG lưu currentUser)
     const originalRender = res.render.bind(res);
     res.render = (view, data) => {
-        if (view === 'posts/index') redisService.setPostList(cacheKey, data, ttl).catch(() => { });
+        if (view === 'posts/index' && data) {
+            // Lọc ra chỉ những field cần cache (bài đăng, phân trang, categories...)
+            // Loại bỏ currentUser và các field runtime khác
+            const { currentUser, isAdmin, currentYear, ...cacheData } = data;
+            redisService.setPostList(cacheKey, cacheData, ttl).catch(() => { });
+        }
         originalRender(view, data);
     };
     next();

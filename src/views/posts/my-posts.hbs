@@ -1,0 +1,111 @@
+<div class="my-posts-header">
+    <h1 class="page-title">📝 Bài đăng của tôi</h1>
+    <a href="/posts/create" class="btn btn-primary">+ Viết bài mới</a>
+</div>
+
+{{#if submitted}}<div class="alert alert-success">✅ Bài đăng đã được gửi đi chờ admin phê duyệt!</div>{{/if}}
+{{#if deleted}}<div class="alert alert-success">🗑️ Đã xóa bài đăng.</div>{{/if}}
+{{#if updated}}<div class="alert alert-success">✅ Đã cập nhật bài đăng.</div>{{/if}}
+{{#if editError}}<div class="alert alert-error">⚠️ Không thể chỉnh sửa bài đăng đang chờ duyệt hoặc đã được duyệt.</div>
+{{/if}}
+
+<!-- Notifications -->
+{{#if notifications.length}}
+<div class="notifications-panel">
+    <div class="notif-header">
+        <h3>🔔 Thông báo {{#if unreadCount}}<span class="badge-count">{{unreadCount}}</span>{{/if}}</h3>
+        {{#if unreadCount}}
+        <button class="btn-link" id="markAllRead">Đánh dấu đã đọc</button>
+        {{/if}}
+    </div>
+    <ul class="notif-list">
+        {{#each notifications}}
+        <li class="notif-item {{#unless isRead}}notif-unread{{/unless}}">
+            <p>{{message}}</p>
+            <span class="notif-time">{{timeAgo createdAt}}</span>
+        </li>
+        {{/each}}
+    </ul>
+</div>
+{{/if}}
+
+<!-- Filter tabs -->
+<div class="status-tabs">
+    <a href="/posts/my-posts" class="tab {{#unless currentStatus}}active{{/unless}}">Tất cả</a>
+    <a href="/posts/my-posts?status=draft" class="tab {{#if (eq currentStatus 'draft')}}active{{/if}}">Nháp</a>
+    <a href="/posts/my-posts?status=pending" class="tab {{#if (eq currentStatus 'pending')}}active{{/if}}">Chờ
+        duyệt</a>
+    <a href="/posts/my-posts?status=approved" class="tab {{#if (eq currentStatus 'approved')}}active{{/if}}">Đã
+        duyệt</a>
+    <a href="/posts/my-posts?status=rejected" class="tab {{#if (eq currentStatus 'rejected')}}active{{/if}}">Bị từ
+        chối</a>
+</div>
+
+{{#if posts.length}}
+<div class="my-posts-table-wrap">
+    <table class="my-posts-table">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Danh mục</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each posts}}
+            <tr>
+                <td class="post-title-cell">
+                    {{#if (eq status 'approved')}}
+                    <a href="/posts/{{slug}}">{{title}}</a>
+                    {{else}}
+                    {{title}}
+                    {{/if}}
+                    {{#if rejectionReason}}
+                    <div class="rejection-hint" title="{{rejectionReason}}">⚠️ {{truncate rejectionReason 60}}</div>
+                    {{/if}}
+                </td>
+                <td>{{#if category}}{{category.name}}{{else}}—{{/if}}</td>
+                <td><span class="badge badge-{{statusClass status}}">{{statusLabel status}}</span></td>
+                <td>{{formatDate createdAt}}</td>
+                <td class="actions-cell">
+                    {{#if (eq status 'draft')}}
+                    <a href="/posts/{{_id}}/edit" class="btn-sm btn-secondary">✏️</a>
+                    <form action="/posts/{{_id}}/delete?_method=DELETE" method="POST" style="display:inline">
+                        <button type="submit" class="btn-sm btn-danger"
+                            onclick="return confirm('Xóa bài này?')">🗑️</button>
+                    </form>
+                    {{/if}}
+                    {{#if (eq status 'rejected')}}
+                    <a href="/posts/{{_id}}/edit" class="btn-sm btn-secondary">✏️</a>
+                    <form action="/posts/{{_id}}/delete?_method=DELETE" method="POST" style="display:inline">
+                        <button type="submit" class="btn-sm btn-danger"
+                            onclick="return confirm('Xóa bài này?')">🗑️</button>
+                    </form>
+                    {{/if}}
+                    {{#if (eq status 'approved')}}
+                    <a href="/posts/{{slug}}" class="btn-sm btn-primary">👁️ Xem</a>
+                    {{/if}}
+                    {{#if (eq status 'pending')}}
+                    <span class="text-muted">Đang chờ duyệt...</span> ||
+                    <form action="/posts/{{_id}}/delete?_method=DELETE" method="POST" style="display:inline">
+                        <button type="submit" class="btn-sm btn-danger"
+                            onclick="return confirm('Hủy đăng bài?')">Hủy</button>
+                    </form>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+{{> pagination}}
+{{else}}
+<div class="empty-state">
+    <div class="empty-icon">📝</div>
+    <h2>Chưa có bài đăng nào</h2>
+    <a href="/posts/create" class="btn btn-primary">✍️ Viết bài đầu tiên</a>
+</div>
+{{/if}}
+</div>
