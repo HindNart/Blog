@@ -1,0 +1,43 @@
+<div class="admin-toolbar">
+    <form action="/admin/posts" method="GET" class="search-form">
+        <input type="text" name="keyword" value="{{keyword}}" placeholder="Tìm kiếm tiêu đề..." class="form-input">
+        <button type="submit" class="btn btn-primary">🔍</button>
+        {{#if keyword}}<a href="/admin/posts" class="btn btn-secondary">✕ Xóa lọc</a>{{/if}}
+    </form>
+    <span class="result-count">{{pagination.totalItems}} bài đăng</span>
+</div>
+
+{{#if posts.length}}
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Tác giả</th>
+                <th>Danh mục</th>
+                <th>Ngày duyệt</th>
+                <th>Lượt xem</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each posts}}
+            <tr>
+                <td><a href="/posts/{{slug}}" target="_blank">{{title}}</a></td>
+                <td>{{author.username}}</td>
+                <td>{{#if category}}{{category.name}}{{else}}—{{/if}}</td>
+                <td>{{formatDate approvedAt}}</td>
+                <td>{{views}}</td>
+                <td><a href="/posts/{{slug}}" target="_blank" class="btn-sm btn-secondary">👁️</a></td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+{{> pagination}}
+{{else}}
+<div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <h2>Không có bài đăng nào.</h2>
+</div>
+{{/if}}

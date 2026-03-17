@@ -1,0 +1,59 @@
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">✍️</div>
+        <h1 class="auth-title">Đăng nhập</h1>
+        {{> flash-message}}
+        {{#if registered}}<div class="alert alert-success">✅ Đăng ký thành công! Vui lòng kiểm tra email để xác minh tài
+            khoản.</div>{{/if}}
+        {{#if verified}}<div class="alert alert-success">✅ Email đã được xác minh! Hãy đăng nhập.</div>{{/if}}
+        {{#if reset}}<div class="alert alert-success">✅ Đặt lại mật khẩu thành công!</div>{{/if}}
+        {{#if emailNotVerified}}
+        <div class="alert alert-warning">
+            ⚠️ Email của bạn chưa được xác minh.
+            <a href="/auth/resend-verification" class="alert-link">Gửi lại email xác minh →</a>
+        </div>
+        {{/if}}
+
+        <form action="/auth/login" method="POST" class="auth-form" id="loginForm" novalidate>
+            <input type="hidden" name="redirect" value="{{redirect}}">
+            <div class="form-group">
+                <label class="form-label" for="login-email">Email</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    <input type="email" id="login-email" name="email" value="{{email}}"
+                        class="form-input input-with-icon" placeholder="email@example.com" required
+                        autocomplete="email">
+                </div>
+                <p class="field-error" id="err-email" role="alert"></p>
+            </div>
+
+            <div class="form-group">
+                <div class="form-label-row">
+                    <label class="form-label" for="login-password">Mật khẩu</label>
+                    <a href="/auth/forgot-password" class="link-muted">Quên mật khẩu?</a>
+                </div>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    <input type="password" id="login-password" name="password" class="form-input input-with-icon"
+                        placeholder="••••••••" required autocomplete="current-password">
+                    <button type="button" class="pwd-toggle" data-target="login-password" aria-label="Hiện/ẩn mật khẩu">
+                        <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="field-error" id="err-password" role="alert"></p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Đăng nhập</button>
+        </form>
+        <p class="auth-switch">Chưa có tài khoản? <a href="/auth/register">Đăng ký ngay</a></p>
+    </div>
+</div>

@@ -1,0 +1,65 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-brand">✍️ Blog App</a>
+
+        <div class="nav-search">
+            <form action="/posts" method="GET" class="search-form" role="search">
+                <input type="search" name="keyword" placeholder="Tìm kiếm bài đăng..." value="{{keyword}}"
+                    class="search-input" aria-label="Tìm kiếm">
+                <button type="submit" class="search-btn" aria-label="Tìm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <div class="nav-links" id="navLinks">
+            {{#if currentUser}}
+            {{#if isAdmin}}
+            <a href="/admin/dashboard" class="nav-link nav-admin">⚡ Admin</a>
+            {{/if}}
+            <a href="/posts/my-posts" class="nav-link">📝 Bài của tôi</a>
+            <a href="/posts/create" class="nav-link nav-btn-write">+ Viết bài</a>
+
+            <div class="nav-dropdown">
+                <button class="nav-user-btn" aria-haspopup="true" aria-expanded="false" id="userDropBtn">
+                    {{#if currentUser.avatar}}
+                    <img src="{{currentUser.avatar}}" alt="avatar" class="nav-avatar">
+                    {{else}}
+                    <span class="nav-avatar-placeholder">{{substr currentUser.username 0 1}}</span>
+                    {{/if}}
+                    <span class="nav-username">{{currentUser.username}}</span>
+                    <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5">
+                        <path d="m6 9 6 6 6-6" />
+                    </svg>
+                </button>
+                <div class="dropdown-menu" id="userDropMenu" role="menu">
+                    <div class="dropdown-header">
+                        <span class="dropdown-username">{{currentUser.username}}</span>
+                        <span class="dropdown-email">{{currentUser.email}}</span>
+                    </div>
+                    <hr class="dropdown-divider">
+                    <a href="/user/profile" class="dropdown-item" role="menuitem">👤 Trang cá nhân</a>
+                    <form action="/auth/logout" method="POST">
+                        <button type="submit" class="dropdown-item dropdown-logout" role="menuitem">🚪 Đăng
+                            xuất</button>
+                    </form>
+                </div>
+            </div>
+            {{else}}
+            <a href="/auth/login" class="nav-link">Đăng nhập</a>
+            <a href="/auth/register" class="nav-link nav-btn-register">Đăng ký</a>
+            {{/if}}
+        </div>
+
+        <button class="nav-hamburger" id="navToggle" aria-label="Menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+    </div>
+</nav>

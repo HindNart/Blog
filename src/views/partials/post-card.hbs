@@ -1,0 +1,21 @@
+<article class="post-card">
+    {{#if thumbnail}}
+    <a href="/posts/{{slug}}" class="post-card-img-link">
+        <img src="{{thumbnail}}" alt="{{title}}" class="post-card-img" loading="lazy">
+    </a>
+    {{/if}}
+    <div class="post-card-body">
+        {{#if category}}
+        <a href="/posts?category={{category.slug}}" class="post-category-badge">{{category.name}}</a>
+        {{/if}}
+        <h2 class="post-card-title">
+            <a href="/posts/{{slug}}">{{title}}</a>
+        </h2>
+        <p class="post-card-excerpt">{{excerpt}}</p>
+        <div class="post-card-meta">
+            <span class="post-author">✍️ {{author.username}}</span>
+            <span class="post-date">📅 {{timeAgo createdAt}}</span>
+            <span class="post-views">👁️ {{views}}</span>
+        </div>
+    </div>
+</article>

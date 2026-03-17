@@ -1,0 +1,34 @@
+<div class="page-container">
+    <!-- Hero / Filter bar -->
+    <section class="filter-bar">
+        <div class="categories-list">
+            <a href="/posts" class="category-tag {{#unless selectedCategory}}active{{/unless}}">Tất cả</a>
+            {{#each categories}}
+            <a href="/posts?category={{slug}}"
+                class="category-tag {{#if (eq ../selectedCategory.slug slug)}}active{{/if}}">{{name}}</a>
+            {{/each}}
+        </div>
+        {{#if keyword}}
+        <p class="search-result-info">🔍 Kết quả cho: <strong>"{{keyword}}"</strong> — {{pagination.totalItems}} bài</p>
+        {{/if}}
+    </section>
+
+    <!-- Posts Grid -->
+    {{#if posts.length}}
+    <div class="posts-grid">
+        {{#each posts}}
+        {{> post-card}}
+        {{/each}}
+    </div>
+    {{> pagination}}
+    {{else}}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h2>Không có bài đăng nào</h2>
+        <p>{{#if keyword}}Không tìm thấy bài đăng phù hợp.{{else}}Chưa có bài đăng nào được phê duyệt.{{/if}}</p>
+        {{#if currentUser}}
+        <a href="/posts/create" class="btn btn-primary">✍️ Viết bài đầu tiên</a>
+        {{/if}}
+    </div>
+    {{/if}}
+</div>
