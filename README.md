@@ -11,8 +11,6 @@
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
-[Live Demo](#) · [Report Bug](issues) · [Request Feature](issues)
-
 </div>
 
 ---
