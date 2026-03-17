@@ -1,4 +1,36 @@
-node_modules
+# ── Dependencies ─────────────────────────────────────────────
+node_modules/
+
+# ── Environment & secrets ─────────────────────────────────────
 .env
+.env.*
+!.env.example
+
+# ── Development & tooling ─────────────────────────────────────
+.git/
+.gitignore
+.eslintrc*
+.prettierrc*
+nodemon.json
+
+# ── Logs & temp files ─────────────────────────────────────────
 *.log
-.git
+npm-debug.log*
+logs/
+tmp/
+temp/
+
+# ── OS artefacts ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Documentation (not needed at runtime) ────────────────────
+README.md
+docs/
+*.md
+
+# ── Test files ───────────────────────────────────────────────
+__tests__/
+*.test.js
+*.spec.js
+coverage/

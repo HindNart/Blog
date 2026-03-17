@@ -1,0 +1,87 @@
+# ============================================================
+#  Blog App — Docker Compose
+#  Brings up the full stack locally:
+#    app  → Node.js server  (port 1911)
+#    mongo → MongoDB 7      (port 27017)
+#    redis → Redis 7        (port 6379)
+# ============================================================
+
+version: "3.9"
+
+services:
+
+  # ── Application ──────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production       # Use the production stage
+    container_name: blog-app
+    restart: unless-stopped
+    ports:
+      - "1911:1911"
+    env_file:
+      - .env                   # All variables from your .env file
+    environment:
+      # Override the DB/Redis URLs to use the container hostnames
+      MONGODB_URI: mongodb://mongo:27017/blog-app
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - blog-network
+    # Graceful shutdown — give Node.js 15 s to finish in-flight requests
+    stop_grace_period: 15s
+
+  # ── MongoDB ───────────────────────────────────────────────
+  mongo:
+    image: mongo:7-jammy
+    container_name: blog-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"          # Remove this line in production
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ── Redis ─────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: blog-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"            # Remove this line in production
+    volumes:
+      - redis_data:/data
+    # Persist data to disk (AOF mode)
+    command: redis-server --appendonly yes
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+# ── Volumes ───────────────────────────────────────────────────
+volumes:
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ── Network ───────────────────────────────────────────────────
+networks:
+  blog-network:
+    driver: bridge
