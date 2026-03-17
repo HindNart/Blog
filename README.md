@@ -677,35 +677,6 @@ Open a [GitHub Issue](issues/new) with:
 3. Expected vs. actual behaviour
 4. Node.js / MongoDB / Redis versions and OS
 
----
-
-## 🗺️ Roadmap
-
-The following features are planned for future releases. Community contributions toward any of these are especially welcome.
-
-### v1.1 — Q3 2025
-- [ ] **Comment system** — threaded comments with moderation queue
-- [ ] **Post reactions** — like / bookmark functionality
-- [ ] **Tag cloud** — visual tag browsing on the homepage
-
-### v1.2 — Q4 2025
-- [ ] **RSS feed** — `/feed.xml` for post subscriptions
-- [ ] **Post series** — link related posts into ordered series
-- [ ] **Markdown editor** — alternative to the current contenteditable editor
-- [ ] **Admin user management** — list users, deactivate accounts, promote to admin
-
-### v2.0 — 2026
-- [ ] **REST API layer** — JSON API alongside the existing SSR views (for SPA/mobile clients)
-- [ ] **OAuth2 login** — Google and GitHub social sign-in
-- [ ] **Full-text search upgrade** — Elasticsearch or Atlas Search integration
-- [ ] **Media library** — centralised image management per user
-- [ ] **Analytics dashboard** — post views, referrers, subscriber growth charts
-- [ ] **Email queue** — background job processing with Bull/BullMQ for reliable email delivery
-
-> Have a feature idea not listed here? [Open a discussion](../../discussions) — we'd love to hear it.
-
----
-
 ## 📄 License
 
 ```
