@@ -132,6 +132,7 @@ const adminService = {
             message: `Bài đăng "${post.title}" đã được admin khôi phục.`,
         });
         await redisService.invalidateUnreadCount(post.author._id);
+        mailService.sendPostRestore(post.author.email, post.title, post.slug);
         return post;
     },
 

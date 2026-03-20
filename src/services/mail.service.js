@@ -82,6 +82,22 @@ const mailService = {
         });
     },
 
+    // Thông báo khôi phục bài
+    async sendPostRestore(email, postTitle, postSlug) {
+        const postUrl = `${appUrl()}/posts/${postSlug}`;
+        const subject = '🔁 Khôi phục bài viết';
+        const body = `
+            <h2 style="color:#166534;margin-top:0">🎉 Chúc mừng!</h2>
+            <p style="color:#475569">Bài đăng <strong>"${postTitle}"</strong> đã được khôi phục và hiển thị công khai trở lại.</p>
+            <div style="text-align:center;margin:1.5rem 0">${btnPrimary(postUrl, '👁️ Xem bài đăng')}</div>`
+        await transporter.sendMail({
+            from: from(),
+            to: email,
+            subject,
+            html: baseTemplate(body)
+        });
+    },
+
     // Newsletter cho subscribers khi có bài đăng mới
     async sendNewsletterToSubscribers(subscribers, post) {
         const postUrl = `${appUrl()}/posts/${post.slug}`;
