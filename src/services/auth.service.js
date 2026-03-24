@@ -24,9 +24,8 @@ const authService = {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const { token, hashed, expires } = generateEmailToken();
-        const user = await User.create({ username, email, password: hashedPassword, emailVerifyToken: hashed, emailVerifyExpires: expires, isEmailVerified: false, });
+        await User.create({ username, email, password: hashedPassword, emailVerifyToken: hashed, emailVerifyExpires: expires, isEmailVerified: false, });
         mailService.sendEmailVerification(email, username, token).catch(() => { });
-        return user;
     },
 
     // Xác minh email
@@ -43,8 +42,6 @@ const authService = {
         user.emailVerifyToken = undefined;
         user.emailVerifyExpires = undefined;
         await user.save({ validateBeforeSave: false });
-
-        return user;
     },
 
     // Gửi lại email xác minh
@@ -89,21 +86,6 @@ const authService = {
         try { await redisService.deleteRefreshToken(userId); } catch { }
         try { await redisService.blacklistToken(accessToken); } catch { }
         clearCookies(res);
-    },
-
-    async refreshTokens(userId, refreshToken, res) {
-        const stored = await redisService.getRefreshToken(userId);
-        if (!stored || stored !== refreshToken) {
-            clearCookies(res);
-            throw new AppError('Phiên đăng nhập không hợp lệ', 401);
-        }
-        const user = await User.findById(userId);
-        if (!user || !user.isActive) throw new AppError('Tài khoản không tồn tại', 401);
-
-        const { accessToken: newAccess, refreshToken: newRefresh } = generateTokens(user._id, user.role);
-        await redisService.saveRefreshToken(user._id, newRefresh);
-        setCookies(res, newAccess, newRefresh);
-        return user;
     },
 
     async forgotPassword(email) {
