@@ -52,7 +52,6 @@ const userService = {
         user.avatar = null;
         user.avatarPublicId = null;
         await user.save({ validateBeforeSave: false });
-        return user;
     },
 
     async deleteAccount(userId, password) {

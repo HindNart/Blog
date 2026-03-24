@@ -88,10 +88,8 @@ const adminService = {
 
         // Send newsletter (non-blocking)
         Subscriber.find({ isActive: true }).lean().then((subs) => {
-            if (subs.length) mailService.sendNewsletterBatch(subs, post).catch(() => { });
+            if (subs.length) mailService.sendNewsletterToSubscribers(subs, post).catch(() => { });
         });
-
-        return post;
     },
 
     async rejectPost(postId, adminId, reason) {
@@ -114,7 +112,6 @@ const adminService = {
         await redisService.invalidateUnreadCount(post.author._id);
 
         mailService.sendPostApprovalResult(post.author.email, post.title, post.slug, false, reason).catch(() => { });
-        return post;
     },
 
     async restorePost(postId) {
@@ -133,7 +130,6 @@ const adminService = {
         });
         await redisService.invalidateUnreadCount(post.author._id);
         mailService.sendPostRestore(post.author.email, post.title, post.slug);
-        return post;
     },
 
     async permanentDelete(postId) {
@@ -147,7 +143,6 @@ const adminService = {
         await uploadService.deleteMultiple(publicIds);
 
         await Post.deleteOne({ _id: postId });
-        return post;
     },
 };
 
