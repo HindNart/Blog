@@ -24,7 +24,7 @@ USER appuser
 
 # ── Runtime configuration ─────────────────────────────────────
 # Document the port (does NOT actually publish it — use -p flag)
-EXPOSE 1911
+EXPOSE 10000
 
 # NODE_ENV defaults to production; override with --env if needed
 ENV NODE_ENV=production
