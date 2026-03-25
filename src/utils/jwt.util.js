@@ -4,7 +4,7 @@ const generateTokens = (userId, role) => {
     const accessToken = jwt.sign(
         { userId, role },
         process.env.JWT_ACCESS_SECRET,
-        { expiresIn: '1h' }   // tăng lên 1h để tránh expire liên tục khi dev
+        { expiresIn: '15m' }
     );
     const refreshToken = jwt.sign(
         { userId },
@@ -23,7 +23,7 @@ const setCookies = (res, accessToken, refreshToken) => {
     };
     res.cookie('accessToken', accessToken, {
         ...base,
-        maxAge: 60 * 60 * 1000,              // 1 giờ
+        maxAge: 15 * 60 * 1000,              // 15 phút
     });
     res.cookie('refreshToken', refreshToken, {
         ...base,

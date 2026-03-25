@@ -84,11 +84,11 @@ const adminService = {
         await redisService.invalidateUnreadCount(post.author._id);
 
         // Send email (non-blocking)
-        mailService.sendPostApprovalResult(post.author.email, post.title, post.slug, true).catch(() => { });
+        await mailService.sendPostApprovalResult(post.author.email, post.title, post.slug, true).catch(() => { });
 
         // Send newsletter (non-blocking)
-        Subscriber.find({ isActive: true }).lean().then((subs) => {
-            if (subs.length) mailService.sendNewsletterToSubscribers(subs, post).catch(() => { });
+        Subscriber.find({ isActive: true }).lean().then(async (subs) => {
+            if (subs.length) await mailService.sendNewsletterToSubscribers(subs, post).catch(() => { });
         });
     },
 
@@ -111,7 +111,7 @@ const adminService = {
         });
         await redisService.invalidateUnreadCount(post.author._id);
 
-        mailService.sendPostApprovalResult(post.author.email, post.title, post.slug, false, reason).catch(() => { });
+        await mailService.sendPostApprovalResult(post.author.email, post.title, post.slug, false, reason).catch(() => { });
     },
 
     async restorePost(postId) {
@@ -129,7 +129,7 @@ const adminService = {
             message: `Bài đăng "${post.title}" đã được admin khôi phục.`,
         });
         await redisService.invalidateUnreadCount(post.author._id);
-        mailService.sendPostRestore(post.author.email, post.title, post.slug);
+        await mailService.sendPostRestore(post.author.email, post.title, post.slug);
     },
 
     async permanentDelete(postId) {
