@@ -1,4 +1,5 @@
 require('dotenv').config();
+require("dns").setDefaultResultOrder("ipv4first");
 const { connectDB } = require('./src/config/db');
 const { connectRedis } = require('./src/config/redis');
 const app = require('./app');
